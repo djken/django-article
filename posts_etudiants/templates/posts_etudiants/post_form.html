@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}{{ action }} un Post{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-body">
+                <h2 class="card-title">{{ action }} un Post</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="id_titre" class="form-label">Titre</label>
+                        {{ form.titre|add_class:"form-control" }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_contenu" class="form-label">Contenu</label>
+                        {{ form.contenu|add_class:"summernote" }}
+                    </div>
+                    <button type="submit" class="btn btn-success">Publier</button>
+                    <a href="{% url 'liste_posts' %}" class="btn btn-secondary">Retour</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.summernote').summernote({
+            height: 400,
+            toolbar: [
+                ['style', ['bold', 'italic', 'underline']],
+                ['font', ['fontsize']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['insert', ['link', 'picture']],
+            ]
+        });
+    });
+</script>
+{% endblock %}
