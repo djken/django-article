@@ -4,98 +4,241 @@
 {% block title %}Liste des Posts{% endblock %}
 
 {% block content %}
-<h1 class="mb-4">Liste des Posts</h1>
 
-<!-- Formulaire de recherche -->
-<div class="row mb-4">
-    <div class="col-md-6 mx-auto">
-        <form method="get" action="{% url 'liste_posts' %}" class="d-flex" id="search-form">
-            <input 
-                type="text" 
-                name="q" 
-                value="{{ query|default:'' }}" 
-                class="form-control me-2" 
-                placeholder="Rechercher un post..." 
-                aria-label="Recherche" 
-                id="search-input"
-            >
-            <button type="submit" class="btn btn-primary">Rechercher</button>
-        </form>
+<!-- CSS OVERRIDES FOR LIGHT THEME -->
+<style>
+    :root {
+        /* Override Dark Mode Variables to Light Mode */
+        --bg-body: #f3f4f6;         /* Light gray-blue background */
+        --card-bg: #ffffff;         /* White cards */
+        --fg-color: #1f2937;        /* Dark charcoal text */
+        --fg-muted: #6b7280;        /* Medium gray text */
+        --border: #e5e7eb;          /* Light gray borders */
+        --input-bg: #ffffff;        /* White inputs */
+        
+        /* Keep accents (Gold) */
+        --accent: #d4a053;          
+        --accent-hover: #b8862f;    
+        --accent-glow: rgba(212, 160, 83, 0.2); /* Subtle gold glow */
+    }
+
+    body {
+        background-color: var(--bg-body) !important;
+        color: var(--fg-color);
+    }
+</style>
+
+<!-- Conteneur principal avec animation d'entrée -->
+<div style="animation: fadeUp 0.5s ease-out both;">
+    
+    <!-- En-tête de la page -->
+    <div style="text-align: center; margin-bottom: 2.5rem;">
+        <h1 style="font-family: 'Playfair Display', serif; font-weight: 800; font-size: 2.2rem; color: var(--fg-color); margin-bottom: 0.5rem; letter-spacing: -0.02em;">
+            Le Forum
+        </h1>
+        <p style="color: var(--fg-muted); font-size: 1rem;">
+            Découvrez les dernières discussions et publications
+        </p>
     </div>
-</div>
 
-<div class="row" id="post-list">
-    {% for post in page_obj %}
-        <div class="col-md-4 mb-3">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">
-                        <a href="{% url 'detail_post' post.pk %}" class="text-decoration-none">
-                            {{ post.titre }}
-                        </a>
-                    </h5>
-                    <p class="card-text">
-                        Par {{ post.auteur.profiletudiant.prenom }} {{ post.auteur.profiletudiant.nom }}
-                    </p>
-                    <p class="card-text text-muted">
-                        {{ post.date_creation|date:"d M Y" }}
-                    </p>
+    <!-- Formulaire de recherche stylisé -->
+    <div class="row mb-5">
+        <div class="col-md-8 mx-auto">
+            <form method="get" action="{% url 'liste_posts' %}" id="search-form" style="position: relative;">
+                <div style="position: relative; display: flex; align-items: center;">
+                    <!-- Icône de recherche -->
+                    <span style="position: absolute; left: 1rem; color: var(--fg-muted); z-index: 10;">
+                        <i class="fa-solid fa-search"></i>
+                    </span>
+                    
+                    <!-- Input de recherche -->
+                    <input 
+                        type="text" 
+                        name="q" 
+                        value="{{ query|default:'' }}" 
+                        placeholder="Rechercher un post, un sujet..." 
+                        aria-label="Recherche" 
+                        id="search-input"
+                        style="
+                            width: 100%; 
+                            padding: 1rem 1rem 1rem 3rem; 
+                            border-radius: 12px; 
+                            border: 1px solid var(--border); 
+                            background: var(--input-bg); 
+                            color: var(--fg-color);
+                            font-size: 1rem;
+                            transition: all 0.2s;
+                            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+                        "
+                        onfocus="this.style.borderColor='var(--accent)'; this.style.boxShadow='0 0 0 4px var(--accent-glow)'"
+                        onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='0 4px 6px -1px rgba(0, 0, 0, 0.05)'"
+                    >
+                    
+                    <!-- Bouton de recherche -->
+                    <button type="submit" class="btn-accent" 
+                        style="
+                            position: absolute; right: 6px; top: 6px; bottom: 6px;
+                            padding: 0 1.2rem; border-radius: 8px; border: none;
+                            background: var(--accent); color: #fff; font-weight: 600;
+                            cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                        "
+                        onmouseover="this.style.background='var(--accent-hover)'; this.style.transform='translateY(-1px)'"
+                        onmouseout="this.style.background='var(--accent)'; this.style.transform='translateY(0)'"
+                    >
+                        OK
+                    </button>
                 </div>
-            </div>
+            </form>
         </div>
-    {% empty %}
-        <div class="col-12">
-            <p class="text-muted">Aucun post trouvé.</p>
-        </div>
-    {% endfor %}
-</div>
+    </div>
 
-<!-- Pagination -->
-{% if page_obj.has_other_pages %}
-<nav aria-label="Pagination des posts" class="mt-4">
-    <ul class="pagination justify-content-center">
+    <!-- Grille des posts -->
+    <div class="row" id="post-list">
+        {% for post in page_obj %}
+            <div class="col-md-4 mb-4">
+                <!-- Design de la carte personnalisé -->
+                <a href="{% url 'detail_post' post.pk %}" class="text-decoration-none" style="display: block; height: 100%;">
+                    <div class="card-custom h-100" style="
+                        border-radius: 16px; 
+                        border: 1px solid var(--border); 
+                        background: var(--card-bg); 
+                        transition: all 0.3s ease;
+                        height: 100%;
+                        display: flex;
+                        flex-direction: column;
+                        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+                    "
+                    onmouseover="this.style.transform='translateY(-4px)'; this.style.borderColor='var(--accent)'; this.style.boxShadow='0 12px 24px -8px rgba(0, 0, 0, 0.15)'"
+                    onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='var(--border)'; this.style.boxShadow='0 4px 6px -1px rgba(0, 0, 0, 0.05)'"
+                    >
+                        <div style="padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column;">
+                            
+                            <!-- Titre -->
+                            <h3 style="
+                                font-family: 'Playfair Display', serif; 
+                                font-size: 1.25rem; 
+                                color: var(--fg-color); 
+                                margin-bottom: 0.75rem;
+                                line-height: 1.3;
+                            ">
+                                {{ post.titre }}
+                            </h3>
 
-        {% if page_obj.has_previous %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">
-                    Précédent
+                            <div style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border);">
+                                <!-- Auteur -->
+                                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                    <div style="width: 32px; height: 32px; border-radius: 50%; background: #fff8e1; color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; border: 1px solid rgba(212,160,83,0.2);">
+                                        <i class="fa-solid fa-user"></i>
+                                    </div>
+                                    <span style="color: var(--fg-color); font-size: 0.9rem; font-weight: 600;">
+                                        {{ post.auteur.profiletudiant.prenom }} {{ post.auteur.profiletudiant.nom }}
+                                    </span>
+                                </div>
+                                
+                                <!-- Date -->
+                                <p class="card-text" style="color: var(--fg-muted); font-size: 0.8rem; margin: 0; display: flex; align-items: center; gap: 0.4rem;">
+                                    <i class="fa-regular fa-clock"></i>
+                                    {{ post.date_creation|date:"d M Y" }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </a>
-            </li>
-        {% else %}
-            <li class="page-item disabled">
-                <span class="page-link">Précédent</span>
-            </li>
-        {% endif %}
+            </div>
+        {% empty %}
+            <div class="col-12 text-center" style="padding: 4rem 2rem; background: var(--card-bg); border-radius: 16px; border: 1px dashed var(--border);">
+                <div style="font-size: 3rem; color: #d1d5db; margin-bottom: 1.5rem;">
+                    <i class="fa-solid fa-folder-open"></i>
+                </div>
+                <h3 style="font-family: 'Playfair Display', serif; color: var(--fg-color); margin-bottom: 0.5rem;">Aucun résultat</h3>
+                <p style="color: var(--fg-muted); margin-bottom: 1.5rem;">Nous n'avons trouvé aucun post correspondant à votre recherche.</p>
+                <a href="{% url 'liste_posts' %}" class="btn-accent" style="
+                    display: inline-block;
+                    background: var(--fg-color); 
+                    color: #fff; 
+                    padding: 0.6rem 1.5rem; 
+                    border-radius: 8px; 
+                    text-decoration: none;
+                    font-size: 0.9rem;
+                    transition: background 0.2s;
+                "
+                onmouseover="this.style.background='var(--accent)'" 
+                onmouseout="this.style.background='var(--fg-color)'"
+                >
+                    Réinitialiser
+                </a>
+            </div>
+        {% endfor %}
+    </div>
 
-        {% for num in page_obj.paginator.page_range %}
-            {% if page_obj.number == num %}
-                <li class="page-item active">
-                    <span class="page-link">{{ num }}</span>
-                </li>
-            {% else %}
+    <!-- Pagination personnalisée -->
+    {% if page_obj.has_other_pages %}
+    <nav aria-label="Pagination des posts" class="mt-5">
+        <ul class="pagination justify-content-center" style="gap: 0.5rem;">
+            <!-- Précédent -->
+            {% if page_obj.has_previous %}
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}">
-                        {{ num }}
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}" 
+                       style="border-color: var(--border); color: var(--fg-color); background: var(--card-bg); border-radius: 8px; padding: 0.5rem 1rem; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05);"
+                       onmouseover="this.style.borderColor='var(--accent)'; this.style.color='var(--accent)'"
+                       onmouseout="this.style.borderColor='var(--border)'; this.style.color='var(--fg-color)'"
+                    >
+                        <i class="fa-solid fa-arrow-left"></i> Précédent
                     </a>
                 </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link" style="border-color: transparent; color: #9ca3af; background: transparent; border-radius: 8px; padding: 0.5rem 1rem;">
+                        <i class="fa-solid fa-arrow-left"></i> Précédent
+                    </span>
+                </li>
             {% endif %}
-        {% endfor %}
 
-        {% if page_obj.has_next %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}">
-                    Suivant
-                </a>
-            </li>
-        {% else %}
-            <li class="page-item disabled">
-                <span class="page-link">Suivant</span>
-            </li>
-        {% endif %}
+            <!-- Numéros de page -->
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link" 
+                              style="background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700; border-radius: 8px; padding: 0.5rem 1rem; box-shadow: 0 4px 6px -1px rgba(212,160,83,0.4);">
+                            {{ num }}
+                        </span>
+                    </li>
+                {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}"
+                           style="border-color: var(--border); color: var(--fg-color); background: var(--card-bg); border-radius: 8px; padding: 0.5rem 1rem; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05);"
+                           onmouseover="this.style.borderColor='var(--accent)'; this.style.color='var(--accent)'"
+                           onmouseout="this.style.borderColor='var(--border)'; this.style.color='var(--fg-color)'"
+                        >
+                            {{ num }}
+                        </a>
+                    </li>
+                {% endif %}
+            {% endfor %}
 
-    </ul>
-</nav>
-{% endif %}
+            <!-- Suivant -->
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}"
+                       style="border-color: var(--border); color: var(--fg-color); background: var(--card-bg); border-radius: 8px; padding: 0.5rem 1rem; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05);"
+                       onmouseover="this.style.borderColor='var(--accent)'; this.style.color='var(--accent)'"
+                       onmouseout="this.style.borderColor='var(--border)'; this.style.color='var(--fg-color)'"
+                    >
+                        Suivant <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link" style="border-color: transparent; color: #9ca3af; background: transparent; border-radius: 8px; padding: 0.5rem 1rem;">
+                        Suivant <i class="fa-solid fa-arrow-right"></i>
+                    </span>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+</div>
 {% endblock %}
 
 {% block extra_js %}
@@ -106,11 +249,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('search-input');
     const searchForm = document.getElementById('search-form');
 
+    // Si une query est présente (recherche en cours), on garde le focus
     const hasQuery = "{{ query|default:'' }}" !== "";
 
     if (searchInput && searchForm) {
         searchInput.addEventListener('input', function () {
             clearTimeout(timeout);
+            // Ajouter une classe visuelle pour montrer que la recherche est en cours (optionnel)
             timeout = setTimeout(() => {
                 searchForm.submit();
             }, 500);
@@ -118,6 +263,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (hasQuery) {
             searchInput.focus();
+            // Positionner le curseur à la fin du texte
             searchInput.setSelectionRange(
                 searchInput.value.length,
                 searchInput.value.length

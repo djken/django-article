@@ -14,7 +14,7 @@ SECRET_KEY = 'django-insecure-f62@6(a)=w%z(@a!12kh#bexnp*4cl$5jowy4fw&ojq+v#6y)g
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['aken.pythonanywhere.com', 'localhost', '127.0.0.1'] 
+ALLOWED_HOSTS = ['https://alen.pythonanywhere.com/'] 
 
 
 # Application definition
@@ -106,24 +106,34 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / "static"]
+# STATIC_URL = '/static/'
+# STATICFILES_DIRS = [BASE_DIR / "static"]
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / "media"
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = BASE_DIR / "media"
+
+# Configuration des fichiers statiques pour Bootstrap 
+STATIC_URL = '/static/' 
+STATIC_ROOT = '/home/aken/django-article/static' # Remplacez par votre path 
+STATICFILES_DIRS = [BASE_DIR / "static"] 
+MEDIA_URL = '/media/' 
+MEDIA_ROOT = '/home/aken/django-article/media/' # Remplacez par votre path 
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-SUMMERNOTE_CONFIG = {
-    'summernote': {
-        'width': '100%',
-        'height': '400',
-        'toolbar': [
-            ['style', ['bold', 'italic', 'underline']],
-            ['font', ['fontsize']],
-            ['para', ['ul', 'ol', 'paragraph']],
-            ['insert', ['link', 'picture']],
-        ],
-    }
-}
+# SUMMERNOTE_CONFIG = {
+#     'summernote': {
+#         'width': '100%',
+#         'height': '400',
+#         'toolbar': [
+#           ['style', ['style']],
+#           ['font', ['bold', 'underline', 'clear']],
+#           ['color', ['color']],
+#           ['para', ['ul', 'ol', 'paragraph']],
+#           ['table', ['table']],
+#           ['insert', ['link', 'picture', 'video']],
+#           ['view', ['fullscreen', 'codeview', 'help']]
+#         ],
+#     }
+# }
