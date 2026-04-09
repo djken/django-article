@@ -4,47 +4,144 @@
 {% block title %}{{ action }} un Post{% endblock %}
 
 {% block extra_css %}
+<!-- Summernote CSS -->
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+
+<style>
+    /* Personnalisation de Summernote pour le Thème Clair */
+    .note-editor {
+        border: 1px solid var(--border) !important;
+        border-radius: 12px !important;
+        overflow: hidden; /* Pour arrondir les coins */
+        background-color: var(--card-bg) !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    /* Barre d'outils */
+    .note-toolbar {
+        background-color: #f9fafb !important; /* Gris très clair */
+        border-bottom: 1px solid var(--border) !important;
+        padding: 10px !important;
+    }
+
+    /* Boutons de la barre d'outils */
+    .note-btn {
+        background: transparent !important;
+        border: none !important;
+        color: var(--fg-muted) !important;
+        border-radius: 6px !important;
+        transition: all 0.2s;
+    }
+    .note-btn:hover {
+        background: rgba(212, 160, 83, 0.1) !important; /* Gold subtil */
+        color: var(--accent) !important;
+    }
+    .note-btn.active {
+        background: var(--accent-glow) !important;
+        color: var(--accent) !important;
+    }
+
+    /* Zone d'édition */
+    .note-editable {
+        background-color: var(--card-bg) !important;
+        color: var(--fg-color) !important;
+        padding: 2rem !important;
+        font-size: 1.05rem;
+        line-height: 1.7;
+        min-height: 300px;
+    }
+    .note-editable:focus {
+        outline: none;
+    }
+    
+    /* Placeholder dans Summernote (si supporté) */
+    .note-placeholder {
+        color: var(--fg-muted) !important;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card shadow">
-            <div class="card-body">
-                <h2 class="card-title">{{ action }} un Post</h2>
-                <form method="post">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="id_titre" class="form-label">Titre</label>
-                        {{ form.titre|add_class:"form-control" }}
-                    </div>
-                    <div class="mb-3">
-                        <label for="id_contenu" class="form-label">Contenu</label>
-                        {{ form.contenu|add_class:"summernote" }}
-                    </div>
-                    <button type="submit" class="btn btn-success">Publier</button>
-                    <a href="{% url 'liste_posts' %}" class="btn btn-secondary">Retour</a>
-                </form>
-            </div>
-        </div>
+<div style="max-width: 900px; margin: 0 auto; animation: fadeUp 0.5s ease-out both; padding-bottom: 2rem;">
+    
+    <!-- En-tête de la page -->
+    <div style="text-align: center; margin-bottom: 2.5rem;">
+        <h1 style="
+            font-family: 'Playfair Display', serif; 
+            font-weight: 800; 
+            font-size: 2.2rem; 
+            color: var(--fg-color); 
+            margin-bottom: 0.5rem;
+        ">
+            {{ action }} un Post
+        </h1>
+        <p style="color: var(--fg-muted); font-size: 1.05rem;">
+            Rédigez et partagez votre contenu avec la communauté.
+        </p>
     </div>
+
+    <!-- Conteneur du formulaire -->
+    <div class="card-custom" style="padding: 2.5rem;">
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            <!-- Champ Titre -->
+            <div style="margin-bottom: 1.5rem;">
+                <label for="id_titre" class="form-label-custom">
+                    Titre de l'article
+                </label>
+                {{ form.titre|add_class:"form-control-custom"|attr:"placeholder:Ex: Les nouveautés de la semaine..."|attr:"style:font-size:1.1rem;font-weight:600;" }}
+                
+                {% if form.titre.errors %}
+                    <div style="margin-top: 0.5rem; color: var(--danger); font-size: 0.9rem; display: flex; align-items: center; gap: 5px;">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        {{ form.titre.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Champ Contenu (Summernote) -->
+            <div style="margin-bottom: 2rem;">
+                <label for="id_contenu" class="form-label-custom">
+                    Contenu
+                </label>
+                <!-- Le widget Summernote -->
+                {{ form.contenu|add_class:"summernote" }}
+                
+                {% if form.contenu.errors %}
+                    <div style="margin-top: 0.5rem; color: var(--danger); font-size: 0.9rem; display: flex; align-items: center; gap: 5px;">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        {{ form.contenu.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Boutons d'action -->
+            <div style="
+                display: flex; 
+                justify-content: flex-end; 
+                align-items: center; 
+                gap: 1rem; 
+                padding-top: 1.5rem; 
+                border-top: 1px solid var(--border);
+            ">
+                <a href="{% url 'liste_posts' %}" class="btn-ghost">
+                    Annuler
+                </a>
+                <button type="submit" class="btn-accent">
+                    <i class="fa-solid fa-paper-plane" style="margin-right: 6px;"></i> Publier
+                </button>
+            </div>
+        </form>
+    </div>
+
 </div>
 {% endblock %}
 
 {% block extra_js %}
+<!-- jQuery (Requis pour Summernote) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Summernote JS -->
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
-<script>
-    $(document).ready(function() {
-        $('.summernote').summernote({
-            height: 400,
-            toolbar: [
-                ['style', ['bold', 'italic', 'underline']],
-                ['font', ['fontsize']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['insert', ['link', 'picture']],
-            ]
-        });
-    });
-</script>
+
 {% endblock %}

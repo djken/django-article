@@ -4,26 +4,107 @@
 {% block title %}Connexion{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-4">
-        <div class="card shadow">
-            <div class="card-body">
-                <h2 class="card-title text-center">Connexion</h2>
-                <form method="post">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="id_username" class="form-label">Nom d'utilisateur</label>
-                        {{ form.username|add_class:"form-control" }}
-                    </div>
-                    <div class="mb-3">
-                        <label for="id_password" class="form-label">Mot de passe</label>
-                        {{ form.password|add_class:"form-control" }}
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Se connecter</button>
-                </form>
-                <p class="mt-3 text-center">Pas de compte ? <a href="{% url 'signup' %}">S'inscrire</a></p>
+<div style="max-width:420px;margin:0 auto;animation:fadeUp 0.5s ease-out both;">
+
+    <!-- Decorative icon -->
+    <div style="text-align:center;margin-bottom:1.75rem;">
+        <div style="width:56px;height:56px;border-radius:16px;background:var(--accent-glow);border:1px solid rgba(212,160,83,0.2);display:inline-flex;align-items:center;justify-content:center;">
+            <i class="fa-solid fa-lock" style="color:var(--accent);font-size:1.2rem;"></i>
+        </div>
+    </div>
+
+    <div class="card-custom" style="padding:2rem 2rem 1.75rem;">
+
+        <h2 style="font-family:'Playfair Display',serif;font-weight:800;font-size:1.6rem;text-align:center;margin:0 0 0.35rem;letter-spacing:-0.02em;">
+            Connexion
+        </h2>
+        <p style="text-align:center;color:var(--fg-muted);font-size:0.9rem;margin:0 0 2rem;">
+            Entrez vos identifiants pour continuer
+        </p>
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="alert-custom alert-error-custom" style="margin-bottom:1.25rem;">
+                    {% for error in form.non_field_errors %}
+                        <div style="display:flex;align-items:flex-start;gap:8px;">
+                            <i class="fa-solid fa-circle-exclamation" style="margin-top:2px;flex-shrink:0;"></i>
+                            <span>{{ error }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div style="margin-bottom:1.25rem;">
+                <label for="id_username" class="form-label-custom">
+                    Nom d'utilisateur
+                </label>
+                <div style="position:relative;">
+                    <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--fg-muted);font-size:0.85rem;pointer-events:none;">
+                        <i class="fa-solid fa-user"></i>
+                    </span>
+                    {{ form.username|add_class:"form-control-custom"|attr:"style:padding-left:2.5rem;" }}
+                </div>
+                {% if form.username.errors %}
+                    {% for error in form.username.errors %}
+                        <small style="color:var(--danger);font-size:0.8rem;display:block;margin-top:0.35rem;">
+                            {{ error }}
+                        </small>
+                    {% endfor %}
+                {% endif %}
             </div>
+
+            <div style="margin-bottom:1.75rem;">
+                <label for="id_password" class="form-label-custom">
+                    Mot de passe
+                </label>
+                <div style="position:relative;">
+                    <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--fg-muted);font-size:0.85rem;pointer-events:none;">
+                        <i class="fa-solid fa-key"></i>
+                    </span>
+                    {{ form.password|add_class:"form-control-custom"|attr:"style:padding-left:2.5rem;" }}
+                    <button type="button" id="togglePassword" aria-label="Afficher le mot de passe"
+                        style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--fg-muted);cursor:pointer;padding:4px;font-size:0.85rem;transition:color 0.2s;">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
+                {% if form.password.errors %}
+                    {% for error in form.password.errors %}
+                        <small style="color:var(--danger);font-size:0.8rem;display:block;margin-top:0.35rem;">
+                            {{ error }}
+                        </small>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn-accent" style="width:100%;justify-content:center;padding:0.75rem 1.5rem;font-size:0.95rem;">
+                Se connecter
+            </button>
+        </form>
+
+        <div style="text-align:center;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border);">
+            <span style="color:var(--fg-muted);font-size:0.88rem;">Pas de compte ?</span>
+            <a href="{% url 'signup' %}" style="color:var(--accent);font-weight:600;font-size:0.88rem;text-decoration:none;margin-left:4px;transition:color 0.2s;"
+               onmouseover="this.style.color='var(--accent-hover)'" onmouseout="this.style.color='var(--accent)'">
+                S'inscrire
+            </a>
         </div>
     </div>
 </div>
+
+<script>
+    // Toggle password visibility
+    const toggleBtn = document.getElementById('togglePassword');
+    const passwordField = document.getElementById('id_password');
+    if (toggleBtn && passwordField) {
+        toggleBtn.addEventListener('click', () => {
+            const isPassword = passwordField.type === 'password';
+            passwordField.type = isPassword ? 'text' : 'password';
+            toggleBtn.querySelector('i').className = isPassword
+                ? 'fa-solid fa-eye-slash'
+                : 'fa-solid fa-eye';
+        });
+    }
+</script>
 {% endblock %}
