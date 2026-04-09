@@ -106,21 +106,23 @@ document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('search-input');
     const searchForm = document.getElementById('search-form');
 
+    const hasQuery = "{{ query|default:'' }}" !== "";
+
     if (searchInput && searchForm) {
         searchInput.addEventListener('input', function () {
             clearTimeout(timeout);
             timeout = setTimeout(() => {
                 searchForm.submit();
-            }, 500); // debounce optimisé
+            }, 500);
         });
 
-        {% if query %}
-        searchInput.focus();
-        searchInput.setSelectionRange(
-            searchInput.value.length,
-            searchInput.value.length
-        );
-        {% endif %}
+        if (hasQuery) {
+            searchInput.focus();
+            searchInput.setSelectionRange(
+                searchInput.value.length,
+                searchInput.value.length
+            );
+        }
     }
 });
 </script>
