@@ -1,4 +1,26 @@
-/env
-/db.sqlite3
+# Virtual environment
+env/
+venv/
+myenv/
+
+# Database
+db.sqlite3
+
+# Python
 *.pyc
 __pycache__/
+
+# Environment variables
+.env
+
+# Static files
+/staticfiles/
+
+# Media files
+/media/
+
+# VS Code
+.vscode/
+
+# Mac
+.DS_Store
